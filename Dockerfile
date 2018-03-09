@@ -23,6 +23,8 @@ ENV HOME=/data/tmp
 ENV PORT=80
 ENV ROOT_URL=http://localhost/
 ENV Accounts_AvatarStorePath=/data/app/uploads
+ENV DB_USER=defaultUser
+ENV DB_PASS=defaultPass
 
 # Install MongoDB & Supervisor
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \

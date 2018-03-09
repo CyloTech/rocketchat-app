@@ -40,5 +40,6 @@ fi
 
 cd /data/app/bundle
 
+
 echo "Starting MongoDB with Supervisor"
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
