@@ -8,7 +8,7 @@ export DB_PASS=$(pwgen -s 12 1)
 
 export MONGO_URL="mongodb://${DB_USER}:${DB_PASS}@localhost:27017/rocketchat?authSource=admin"
 
-if [ ! -f /data/conf/rocketchatinstalled ]; then
+if [ ! -f /etc/rc_installed ]; then
     echo "Installing RocketChat"
     sleep 5
 
@@ -35,7 +35,10 @@ stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 EOF
 
-    touch /data/conf/rocketchatinstalled
+    #Tell Apex we're done installing.
+    curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST "https://api.cylo.io/v1/apps/installed/$INSTANCE_ID"
+
+    touch /etc/rc_installed
 fi
 
 cd /data/app/bundle

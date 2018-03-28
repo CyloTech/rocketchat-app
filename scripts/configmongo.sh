@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -f /data/logs/installed ]; then
+if [ ! -f /etc/app_configured ]; then
 
 mkdir -p /data/db
 mkdir -p /data/logs
@@ -57,5 +57,5 @@ stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 EOF
 
-    touch /data/logs/installed
+    touch /etc/app_configured
 fi
