@@ -22,8 +22,8 @@ mongo admin << EOF
 use admin
 db.createUser(
 {
-    user: "${DB_USER}",
-    pwd: "${DB_PASS}",
+    user: "mongoUser",
+    pwd: "mongoPass",
     roles: [ "userAdminAnyDatabase",
              "dbAdminAnyDatabase",
              "readWriteAnyDatabase" ]

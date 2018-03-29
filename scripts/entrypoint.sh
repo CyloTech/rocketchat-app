@@ -1,12 +1,9 @@
 #!/bin/sh
 set -x
 
-export DB_USER=$(pwgen -s 8 1)
-export DB_PASS=$(pwgen -s 12 1)
-
 /bin/sh /configmongo.sh
 
-export MONGO_URL="mongodb://${DB_USER}:${DB_PASS}@localhost:27017/rocketchat?authSource=admin"
+export MONGO_URL="mongodb://mongoUser:mongoPass@localhost:27017/rocketchat?authSource=admin"
 
 if [ ! -f /etc/rc_installed ]; then
     echo "Installing RocketChat"

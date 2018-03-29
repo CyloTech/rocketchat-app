@@ -23,8 +23,9 @@ ENV HOME=/data/tmp
 ENV PORT=80
 ENV ROOT_URL=http://localhost/
 ENV Accounts_AvatarStorePath=/data/app/uploads
-ENV DB_USER=defaultUser
-ENV DB_PASS=defaultPass
+ENV DB_USER=mongoUser
+ENV DB_PASS=mongoPass
+ENV MONGO_URL="mongodb://mongoUser:mongoPass@localhost:27017/rocketchat?authSource=admin"
 
 # Install MongoDB & Supervisor
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
@@ -47,8 +48,11 @@ RUN apt-get update && \
     echo "mongodb-org-tools hold" | dpkg --set-selections
 
 # Install NodeJS & NPM
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
-    apt-get install -y nodejs
+#RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
+#    apt-get install -y nodejs
+
+ADD deps/nodejs_8.9.4-1nodesource1_amd64.deb /nodejs_8.9.4-1nodesource1_amd64.deb
+RUN dpkg -i /nodejs_8.9.4-1nodesource1_amd64.deb
 
 ADD configs/supervisord.conf /etc/supervisord.conf
 ADD scripts/entrypoint.sh /entrypoint.sh
