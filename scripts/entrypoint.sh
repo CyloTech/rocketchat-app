@@ -10,7 +10,7 @@ if [ ! -f /etc/rc_installed ]; then
     sleep 5
 
     cd /data \
-     && curl -SLf "https://releases.rocket.chat/0.63.0-develop/download/" -o rocket.chat.tgz \
+     && curl -L https://releases.rocket.chat/latest/download -o rocket.chat.tgz \
      && mkdir -p /data/app \
      && tar -zxf rocket.chat.tgz -C /data/app \
      && rm rocket.chat.tgz \

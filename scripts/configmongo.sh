@@ -45,7 +45,7 @@ echo "Installing Mongo Supervisor config"
 mkdir -p /etc/supervisor/conf.d
 cat << EOF >> /etc/supervisor/conf.d/mongod.conf
 [program:mongod]
-command=mongod --config /data/conf/mongod.conf --port ${SERVICE_PORT} --dbpath ${SERVICE_HOME} --logpath ${SERVICE_LOGFILE} --logappend -${SERVICE_LOGLEVEL}
+command=mongod --config /data/conf/mongod.conf --port ${SERVICE_PORT} --dbpath ${SERVICE_HOME} --logpath ${SERVICE_LOGFILE} --logappend -${SERVICE_LOGLEVEL} --smallfiles
 autostart=true
 autorestart=true
 priority=10

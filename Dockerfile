@@ -51,8 +51,8 @@ RUN apt-get update && \
 #RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
 #    apt-get install -y nodejs
 
-ADD deps/nodejs_8.9.4-1nodesource1_amd64.deb /nodejs_8.9.4-1nodesource1_amd64.deb
-RUN dpkg -i /nodejs_8.9.4-1nodesource1_amd64.deb
+ADD deps/nodejs_8.11.3-1nodesource1_amd64.deb /nodejs_8.11.3-1nodesource1_amd64.deb
+RUN dpkg -i /nodejs_8.11.3-1nodesource1_amd64.deb
 
 ADD configs/supervisord.conf /etc/supervisord.conf
 ADD scripts/entrypoint.sh /entrypoint.sh
