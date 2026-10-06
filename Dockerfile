@@ -13,7 +13,7 @@ RUN curl -fsSL "https://releases.rocket.chat/${RC_VERSION}/download" -o /tmp/roc
  && tar -xzf /tmp/rocket.chat.tgz -C /app \
  && rm /tmp/rocket.chat.tgz \
  && cd /app/bundle/programs/server \
- && (npm install --cache /tmp/rocketchat-npm-cache || { python3 /usr/local/bin/rocketchat-npm-failure.py; exit 1; }) \
+ && (npm install --loglevel verbose --cache /tmp/rocketchat-npm-cache || { python3 /usr/local/bin/rocketchat-npm-failure.py; exit 1; }) \
  && chown -R appbox:appbox /app \
  && rm -rf /var/lib/apt/lists/* \
  && npm cache clean --force
