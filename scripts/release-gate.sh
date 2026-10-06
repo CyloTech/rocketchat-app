@@ -18,9 +18,13 @@ wait_version() {
   for attempt in $(seq 1 450); do
     [[ "$(docker inspect --format '{{.State.Running}}' "$container")" = true ]] || { echo "Test container exited: $container" >&2; return 1; }
     if ! docker exec "$container" test -f /etc/rc_installed 2>/dev/null; then sleep 2; continue; fi
+    if [[ "$(docker exec "$container" sv status /etc/service/rocketchat /etc/service/mongodb 2>/dev/null | grep -c '^run:' || true)" != 2 ]]; then sleep 2; continue; fi
     info=$(docker exec "$container" curl -fsS http://127.0.0.1/api/info 2>/dev/null || true)
     if printf '%s' "$info" | python3 -c 'import json,sys; data=json.load(sys.stdin); sys.exit(0 if data.get("version") in {sys.argv[1],".".join(sys.argv[1].split(".")[:2])} else 1)' "$expected" 2>/dev/null; then
       echo "Verified $container serves Rocket.Chat $expected"
+      sleep 15
+      [[ "$(docker exec "$container" sv status /etc/service/rocketchat /etc/service/mongodb 2>/dev/null | grep -c '^run:' || true)" = 2 ]] || return 1
+      [[ "$(docker inspect --format '{{.State.Running}}' "$container")" = true ]] || return 1
       return 0
     fi
     sleep 2
@@ -36,6 +40,7 @@ docker run --rm --entrypoint sh "$image_ref" -ec '
  mongod --version | grep -Fq v8.0.
  test "$(id -u appbox)" = 1000
  test -f /app/bundle/main.js
+ command -v chpst >/dev/null
  ! test -e /home/appbox/rocketchat/.cache/node-gyp
  ! test -e /home/appbox/rocketchat/.npm
  ! grep -Eq "^set -x$" /etc/my_init.d/30_rocketchat.sh
@@ -48,7 +53,10 @@ docker stop --time 90 "$fresh" >/dev/null
 docker pull repo.cylo.net/rocketchat:8.8.0 >/dev/null
 for volume in "${volumes[@]}"; do docker volume create "$volume" >/dev/null; done
 mounts=(-v "${volumes[0]}:/home/appbox/mongodb/data" -v "${volumes[1]}:/home/appbox/logs")
-run "$old" repo.cylo.net/rocketchat:8.8.0 "${mounts[@]}"
+# Fixture preparation removes obsolete build caches while retaining the original app and init.
+docker run -d --platform linux/amd64 --name "$old" -e APP_APEX_CALLBACK=false \
+ "${mounts[@]}" --entrypoint /bin/sh repo.cylo.net/rocketchat:8.8.0 \
+ -ec 'rm -rf /home/appbox/rocketchat/.cache /home/appbox/rocketchat/.npm; exec /sbin/my_init' >/dev/null
 wait_version "$old" 8.8.0
 mongo_eval "$old" 'db.appbox_release_canary.insertOne({_id:"upgrade-8.9.0",value:"persistent-data"}); db.rocketchat_settings.updateOne({_id:"uniqueID"},{$set:{value:"appbox-upgrade-identity-canary"}},{upsert:true});'
 docker stop --time 90 "$old" >/dev/null

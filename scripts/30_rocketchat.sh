@@ -29,8 +29,6 @@ cleanup_bootstrap() {
         wait "${ROCKETCHAT_PID}" 2>/dev/null || true
     fi
 
-    killall -9 node 2>/dev/null || true
-
     if [ -n "${MONGOD_PID}" ] && kill -0 "${MONGOD_PID}" 2>/dev/null; then
         kill "${MONGOD_PID}" 2>/dev/null || true
         wait "${MONGOD_PID}" 2>/dev/null || true
@@ -108,7 +106,8 @@ wait_for_mongo_primary
 echo "Starting Rocketchat"
 
 cd /home/appbox/rocketchat/app/bundle
-su -s /bin/sh -c "node main.js" appbox &
+# chpst execs Node directly, so the captured PID remains the real process on Node 24.
+chpst -u appbox:appbox node main.js &
 ROCKETCHAT_PID=$!
 
 wait_for_rocketcat_delete
