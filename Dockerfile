@@ -10,7 +10,8 @@ RUN apt-get update \
  && rm -rf /app/bundle \
  && tar -xzf /tmp/rocket.chat.tgz -C /app \
  && rm /tmp/rocket.chat.tgz \
- && cd /app/bundle/programs/server && npm install \
+ && cd /app/bundle/programs/server \
+ && (npm install --cache /tmp/rocketchat-npm-cache || { grep -E '^[0-9]+ (error|verbose) (code|syscall|errno|path)' /tmp/rocketchat-npm-cache/_logs/*debug-0.log | tail -n 20; exit 1; }) \
  && chown -R appbox:appbox /app \
  && rm -rf /var/lib/apt/lists/* \
  && npm cache clean --force
