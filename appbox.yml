@@ -1,0 +1,22 @@
+app:
+  display_name: "Rocket Chat"
+  publisher: "RocketChat"
+  description: "Rocket.Chat is an open-source team communication platform."
+image:
+  name: "repo.cylo.net/rocketchat"
+  version: "8.9.0"
+  tag: "8.9.0"
+container:
+  memory: 2
+  memory_swap: 2
+  memory_reservation: 1
+  cpus: 0
+  init: true
+  pids_limit: 0
+behavior:
+  app_slots: 1
+  expect_callback: true
+  callback_requires_auth: false
+  can_update: true
+  allow_downgrade: false
+  ssl_restart: false

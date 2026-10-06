@@ -1,26 +1,23 @@
-FROM repo.cylo.io/baseimage
+# Preserve the released MongoDB, volumes, supervisor and Appbox lifecycle.
+FROM repo.cylo.net/rocketchat@sha256:a1f99468372b63ce2495956e1bceed024ceebc76b84f5750a100d9924473334f
+ENV RC_VERSION=8.9.0 NODE_VERSION=24.15.0
+RUN curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz" -o /tmp/node.tgz \
+ && tar -xzf /tmp/node.tgz -C /usr/local --strip-components=1 \
+ && rm /tmp/node.tgz
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends g++ make python3 \
+ && curl -fsSL "https://releases.rocket.chat/${RC_VERSION}/download" -o /tmp/rocket.chat.tgz \
+ && rm -rf /app/bundle \
+ && tar -xzf /tmp/rocket.chat.tgz -C /app \
+ && rm /tmp/rocket.chat.tgz \
+ && cd /app/bundle/programs/server && npm install \
+ && chown -R appbox:appbox /app \
+ && rm -rf /var/lib/apt/lists/* \
+ && npm cache clean --force
+# Startup commands must not expand credentials into logs.
+RUN sed -i '/^set -x$/d' /etc/my_init.d/19_mongo_upgrade.sh /etc/my_init.d/30_rocketchat.sh /scripts/mongodb.sh \
+ && rm -f /usr/local/bin/deno
 
-ENV MYSQL_ROOT_PASSWORD=mysqlr00t \
-    APEX_CALLBACK=false \
-    INSTALL_MONGODB=true
-
-ENV RC_VERSION 0.74.3
-ENV DEPLOY_METHOD=docker
-ENV NODE_ENV=production
-ENV HOME=/home/appbox/rocketchat
-ENV PORT=80
-ENV ROOT_URL=http://localhost/
-ENV Accounts_AvatarStorePath=/home/appbox/rocketchat/app/uploads
-ENV DB_USER=mongoUser
-ENV DB_PASS=mongoPass
-ENV MONGO_URL="mongodb://${DB_USER}:${DB_PASS}@localhost:27017/rocketchat?authSource=admin"
-
-RUN apt-get update
-RUN apt-get install -y graphicsmagick \
-                       python-minimal
-
-ADD deps/nodejs_8.11.3-1nodesource1_amd64.deb /nodejs_8.11.3-1nodesource1_amd64.deb
-RUN dpkg -i /nodejs_8.11.3-1nodesource1_amd64.deb
-
-ADD scripts/30_rocketchat.sh /etc/my_init.d/30_rocketchat.sh
-RUN chmod +x /etc/my_init.d/30_rocketchat.sh
+COPY scripts/01_detect_existing_database.sh /etc/my_init.d/01_detect_existing_database.sh
+COPY scripts/30_rocketchat.sh /etc/my_init.d/30_rocketchat.sh
+RUN chmod +x /etc/my_init.d/01_detect_existing_database.sh /etc/my_init.d/30_rocketchat.sh
