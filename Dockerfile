@@ -1,7 +1,8 @@
 # Preserve the released MongoDB, volumes, supervisor and Appbox lifecycle.
 FROM repo.cylo.net/rocketchat@sha256:a1f99468372b63ce2495956e1bceed024ceebc76b84f5750a100d9924473334f
 ENV RC_VERSION=8.9.0 NODE_VERSION=24.15.0
-RUN curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz" -o /tmp/node.tgz \
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+ && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz" -o /tmp/node.tgz \
  && tar -xzf /tmp/node.tgz -C /usr/local --strip-components=1 \
  && rm /tmp/node.tgz
 RUN apt-get update \
