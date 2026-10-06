@@ -17,6 +17,7 @@ wait_version() {
   local container=$1 expected=$2 info attempt
   for attempt in $(seq 1 450); do
     [[ "$(docker inspect --format '{{.State.Running}}' "$container")" = true ]] || { echo "Test container exited: $container" >&2; return 1; }
+    if ! docker exec "$container" test -f /etc/rc_installed 2>/dev/null; then sleep 2; continue; fi
     info=$(docker exec "$container" curl -fsS http://127.0.0.1/api/info 2>/dev/null || true)
     if printf '%s' "$info" | python3 -c 'import json,sys; data=json.load(sys.stdin); sys.exit(0 if data.get("version") in {sys.argv[1],".".join(sys.argv[1].split(".")[:2])} else 1)' "$expected" 2>/dev/null; then
       echo "Verified $container serves Rocket.Chat $expected"
