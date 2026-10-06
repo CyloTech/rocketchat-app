@@ -36,6 +36,8 @@ docker run --rm --entrypoint sh "$image_ref" -ec '
  mongod --version | grep -Fq v8.0.
  test "$(id -u appbox)" = 1000
  test -f /app/bundle/main.js
+ ! test -e /home/appbox/rocketchat/.cache/node-gyp
+ ! test -e /home/appbox/rocketchat/.npm
  ! grep -Eq "^set -x$" /etc/my_init.d/30_rocketchat.sh
 '
 run "$fresh" "$image_ref"

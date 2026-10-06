@@ -21,6 +21,9 @@ RUN curl -fsSL "https://releases.rocket.chat/${RC_VERSION}/download" -o /tmp/roc
 # Startup commands must not expand credentials into logs.
 RUN sed -i '/^set -x$/d' /etc/my_init.d/19_mongo_upgrade.sh /etc/my_init.d/30_rocketchat.sh /scripts/mongodb.sh \
  && rm -f /usr/local/bin/deno
+# Remove inherited build caches before startup recursively sets workspace ownership.
+RUN rm -rf /home/appbox/rocketchat/.cache /home/appbox/rocketchat/.npm \
+ /home/appbox/.npm /root/.cache/node-gyp /tmp/rocketchat-npm-cache
 
 COPY scripts/01_detect_existing_database.sh /etc/my_init.d/01_detect_existing_database.sh
 COPY scripts/30_rocketchat.sh /etc/my_init.d/30_rocketchat.sh

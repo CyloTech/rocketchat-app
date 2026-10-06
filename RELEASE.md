@@ -4,4 +4,6 @@ The image extends the exact published Appbox 8.8.0 image so MongoDB 8.0, volume 
 
 Release gate: fresh installation, restart, upgrade from 8.8.0 with persistent MongoDB data, and an authenticated registry check before publication.
 
+Inherited Node build caches are removed from the image so first startup does not recursively change ownership of obsolete headers and npm cache files.
+
 On upgrade, the existing MongoDB data is detected before initialization. Workspace identity and cloud registration settings are preserved even though the old setup marker is outside the persistent mounts. The upgrade test checks both a database record and workspace identity.
