@@ -4,10 +4,11 @@ ENV RC_VERSION=8.9.0 NODE_VERSION=24.15.0
 RUN curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz" -o /tmp/node.tgz \
  && tar -xzf /tmp/node.tgz -C /usr/local --strip-components=1 \
  && rm /tmp/node.tgz
-COPY scripts/npm-failure.py /usr/local/bin/rocketchat-npm-failure.py
 RUN apt-get update \
  && apt-get install -y --no-install-recommends g++ make python3 \
- && curl -fsSL "https://releases.rocket.chat/${RC_VERSION}/download" -o /tmp/rocket.chat.tgz \
+ && rm -rf /var/lib/apt/lists/*
+COPY scripts/npm-failure.py /usr/local/bin/rocketchat-npm-failure.py
+RUN curl -fsSL "https://releases.rocket.chat/${RC_VERSION}/download" -o /tmp/rocket.chat.tgz \
  && rm -rf /app/bundle \
  && tar -xzf /tmp/rocket.chat.tgz -C /app \
  && rm /tmp/rocket.chat.tgz \
