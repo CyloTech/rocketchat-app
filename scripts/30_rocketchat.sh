@@ -107,7 +107,7 @@ echo "Starting Rocketchat"
 
 cd /home/appbox/rocketchat/app/bundle
 # chpst execs Node directly, so the captured PID remains the real process on Node 24.
-chpst -u appbox:appbox node main.js &
+chpst -u appbox:appbox env HOME=/home/appbox USER=appbox LOGNAME=appbox node main.js &
 ROCKETCHAT_PID=$!
 
 wait_for_rocketcat_delete
